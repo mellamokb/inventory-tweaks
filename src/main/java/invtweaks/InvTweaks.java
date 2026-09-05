@@ -167,7 +167,28 @@ public class InvTweaks extends InvTweaksObfuscation {
     }
 
     private static int getContainerRowSize(@NotNull GuiContainer guiContainer) {
-        return getSpecialChestRowSize(guiContainer.inventorySlots);
+        int declaredRowSize = getSpecialChestRowSize(guiContainer.inventorySlots);
+        if(declaredRowSize > 0) {
+            return declaredRowSize;
+        }
+
+        Map<ContainerSection, List<Slot>> slotMap = getContainerSlotMap(guiContainer.inventorySlots);
+        List<Slot> chestSlots = slotMap == null ? null : slotMap.get(ContainerSection.CHEST);
+        if(chestSlots != null && !chestSlots.isEmpty()) {
+            int firstRowY = chestSlots.get(0).yPos;
+            int inferredRowSize = 0;
+            for(Slot slot : chestSlots) {
+                if(slot.yPos != firstRowY) {
+                    break;
+                }
+                inferredRowSize++;
+            }
+            if(inferredRowSize > 0) {
+                return inferredRowSize;
+            }
+        }
+
+        return InvTweaksConst.INVENTORY_ROW_SIZE;
     }
 
     @NotNull
