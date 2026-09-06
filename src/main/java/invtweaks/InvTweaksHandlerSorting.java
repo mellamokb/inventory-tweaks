@@ -424,7 +424,10 @@ public class InvTweaksHandlerSorting extends InvTweaksObfuscation {
         }
 
         int iterations = 0;
-        while(remaining.size() > 0 && iterations++ < 50) {
+        // One pass can settle as little as one slot (for example, a reverse-sorted container).
+        // The old fixed limit of 50 left larger modded inventories only partially sorted.
+        int maxIterations = Math.max(50, size);
+        while(remaining.size() > 0 && iterations++ < maxIterations) {
             for(int i : remaining) {
                 if(hasToBeMoved(i, 1)) {
                     for(int j = 0; j < size; j++) {
@@ -440,8 +443,8 @@ public class InvTweaksHandlerSorting extends InvTweaksObfuscation {
             remaining.clear();
             remaining.addAll(nextRemaining);
         }
-        if(iterations == 100) {
-            log.warn("Sorting takes too long, aborting.");
+        if(!remaining.isEmpty()) {
+            log.warn("Sorting takes too long, aborting after " + maxIterations + " iterations.");
         }
 
     }
@@ -557,8 +560,8 @@ public class InvTweaksHandlerSorting extends InvTweaksObfuscation {
     }
 
     private void computeLineSortingRules(int rowSize, boolean horizontal) {
-        // Abort if rowSize is too great.
-        if(rowSize > 9) {
+        // Invalid widths cannot define a grid. Wide containers use default sorting.
+        if(rowSize <= 0 || rowSize > 9) {
             return;
         }
 

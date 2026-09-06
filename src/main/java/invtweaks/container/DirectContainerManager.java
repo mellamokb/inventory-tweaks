@@ -91,7 +91,7 @@ public class DirectContainerManager implements IContainerManager {
         // Use intermediate slot if we have to swap tools, maps, etc.
         assert !srcStack.isEmpty();
         if(!destStack.isEmpty() && !InvTweaksObfuscation.areItemsStackable(srcStack, destStack)) {
-            int intermediateSlot = getFirstEmptyUsableSlotNumber();
+            int intermediateSlot = getFirstEmptyUsableSlotNumber(destStack);
             @Nullable ContainerSection intermediateSection = getSlotSection(intermediateSlot);
             int intermediateIndex = getSlotIndex(intermediateSlot);
             if(intermediateIndex != -1) {
@@ -346,12 +346,21 @@ public class DirectContainerManager implements IContainerManager {
         return container;
     }
 
-    private int getFirstEmptyUsableSlotNumber() {
+    private int getFirstEmptyUsableSlotNumber(@NotNull ItemStack stack) {
         for(ContainerSection section : slotRefs.keySet()) {
             for(@NotNull Slot slot : slotRefs.get(section)) {
-                // Use only standard slot (to make sure
-                // we can freely put and remove items there)
+                // Preserve the vanilla-slot preference used by the original implementation.
                 if(InvTweaksObfuscation.isBasicSlot(slot) && !slot.getHasStack()) {
+                    return InvTweaksObfuscation.getSlotNumber(slot);
+                }
+            }
+        }
+
+        // Capability-backed inventories use Slot subclasses such as SlotItemHandler.
+        // They are valid swap buffers when empty and able to accept the displaced stack.
+        for(ContainerSection section : slotRefs.keySet()) {
+            for(@NotNull Slot slot : slotRefs.get(section)) {
+                if(!slot.getHasStack() && slot.isItemValid(stack)) {
                     return InvTweaksObfuscation.getSlotNumber(slot);
                 }
             }
