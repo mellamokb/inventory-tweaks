@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * Contact: jimeo.wan (at) gmail (dot) com Website: <a href="https://inventory-tweaks.readthedocs.org/">https://inventory-tweaks.readthedocs.org/</a>
  * Source code: <a href="https://github.com/kobata/inventory-tweaks">GitHub</a> License: MIT
  */
-@Mod(modid = "inventorytweaks", dependencies = "required-after:forge@[14.21.0,)", acceptableRemoteVersions = "*", acceptedMinecraftVersions = "", guiFactory = "invtweaks.forge.ModGuiFactory", certificateFingerprint = "55d2cd4f5f0961410bf7b91ef6c6bf00a766dcbe")
+@Mod(modid = "inventorytweaks", dependencies = "required-after:forge@[14.21.0,)", acceptableRemoteVersions = "*", acceptedMinecraftVersions = "", guiFactory = "invtweaks.forge.ModGuiFactory")
 public class InvTweaksMod implements InvTweaksAPI {
     @Mod.Instance
     public static InvTweaksMod instance;
